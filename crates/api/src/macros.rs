@@ -374,10 +374,13 @@ macro_rules! widget {
                 ctx.register_property("opacity", entity, this.opacity);
 
                 if this.element.is_some() || this.id.is_some() || this.classes.len() > 0 {
+                    let mut _selector = crate::theme::Selector::default();
+                  
                     let mut selector = Selector::new();
                     //selector.set_dirty(true);
                     if let Some(element) = this.element {
-                        selector = selector.with(element);
+                        selector = selector.with(element.clone());
+                        _selector.style = Some(element);
                     }
                     if let Some(id) = this.id {
                         selector = selector.id(id);
@@ -387,6 +390,7 @@ macro_rules! widget {
                         selector = selector.class(class);
                     }
                     ctx.register_property("selector", entity, selector);
+                    ctx.register_property("_selector", entity, _selector);
                 }
 
 

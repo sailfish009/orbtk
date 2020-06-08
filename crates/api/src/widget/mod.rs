@@ -36,6 +36,22 @@ pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContai
     }
 }
 
+/// Adds the given `pseudo_class` to the css selector of the given `widget`.
+pub fn add_state(state: &str, widget: &mut WidgetContainer<'_>) {
+    if let Some(selector) = widget.try_get_mut::<crate::theme::Selector>("_selector") {
+        selector.state = Some(String::from(state));
+        selector.dirty = true;
+    }
+}
+
+/// Removes the given `pseudo_class` from the css selector of the given `widget`.
+pub fn remove_state(state: &str, widget: &mut WidgetContainer<'_>) {
+    if let Some(selector) = widget.try_get_mut::<crate::theme::Selector>("_selector") {
+        selector.state = None;
+        selector.dirty = false;
+    }
+}
+
 /// Used to define the `parent_type`of a widget.
 pub enum ParentType {
     /// No children could be added to the widget.

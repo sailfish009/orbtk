@@ -202,60 +202,60 @@ impl<'a> WidgetContainer<'a> {
 
             if let Some(focus) = self.try_clone::<bool>("focused") {
                 if focus && !selector.pseudo_classes.contains("focus") {
-                    add_selector_to_widget("focus", self);
+                    add_state("focus", self);
                     update = true;
                 } else if !focus && selector.pseudo_classes.contains("focus") {
-                    remove_selector_from_widget("focus", self);
+                    remove_state("focus", self);
                     update = true;
                 }
             }
 
             if let Some(selected) = self.try_clone::<bool>("selected") {
                 if selected && !selector.pseudo_classes.contains("selected") {
-                    add_selector_to_widget("selected", self);
+                    add_state("selected", self);
                     update = true;
                 } else if !selected && selector.pseudo_classes.contains("selected") {
-                    remove_selector_from_widget("selected", self);
+                    remove_state("selected", self);
                     update = true;
                 }
             }
 
             if let Some(pressed) = self.try_clone::<bool>("pressed") {
                 if pressed && !selector.pseudo_classes.contains("active") {
-                    add_selector_to_widget("active", self);
+                    add_state("active", self);
                     update = true;
                 } else if !pressed && selector.pseudo_classes.contains("active") {
-                    remove_selector_from_widget("active", self);
+                    remove_state("active", self);
                     update = true;
                 }
             }
 
             if let Some(enabled) = self.try_clone::<bool>("enabled") {
                 if !enabled && !selector.pseudo_classes.contains("disabled") {
-                    add_selector_to_widget("disabled", self);
+                    add_state("disabled", self);
                     update = true;
                 } else if enabled && selector.pseudo_classes.contains("disabled") {
-                    remove_selector_from_widget("disabled", self);
+                    remove_state("disabled", self);
                     update = true;
                 }
             }
 
             if let Some(text) = self.try_clone::<String16>("text") {
                 if text.is_empty() && !selector.pseudo_classes.contains("empty") {
-                    add_selector_to_widget("empty", self);
+                    add_state("empty", self);
                     update = true;
                 } else if !text.is_empty() && selector.pseudo_classes.contains("empty") {
-                    remove_selector_from_widget("empty", self);
+                    remove_state("empty", self);
                     update = true;
                 }
             }
 
             if let Some(expanded) = self.try_clone::<bool>("expanded") {
                 if expanded && !selector.pseudo_classes.contains("expanded") {
-                    add_selector_to_widget("expanded", self);
+                    add_state("expanded", self);
                     update = true;
                 } else if !expanded && selector.pseudo_classes.contains("expanded") {
-                    remove_selector_from_widget("expanded", self);
+                    remove_state("expanded", self);
                     update = true;
                 }
             }

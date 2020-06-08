@@ -1,5 +1,7 @@
 use std::{collections::VecDeque, rc::Rc};
 
+use crate::theme::Theme as _Theme;
+
 use crate::{prelude::*, shell::WindowRequest};
 
 // --- KEYS --
@@ -164,7 +166,9 @@ widget!(
         active: bool,
 
         /// Sets or shares the theme property.
-        theme: Theme
+        theme: Theme,
+
+        _theme: _Theme
     }
 );
 

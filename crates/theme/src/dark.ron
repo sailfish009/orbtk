@@ -2,18 +2,149 @@ Theme (
     name: "orbtk-dark",
     styles: {
         "base": (
-
-        ),
-        "button": (
-            base: "base",
             properties: {
-                "background": "#ffffff"
+                "background": "#3b434a",
+                "font_size": 16,
+                "font_family": "Roboto Medium",
+                "icon_size": 16,
+                "icon_family": "Material Icons",
             },
+        ),
+        "window": (
+             properties: {
+                  "background": "#3b434a",
+             }
+        ),
+        "button": ( 
+            properties: {
+                "height": 36,
+                "background": "#647b91",
+                "border_radius": 4,
+                "font_family": "Roboto Medium",
+            }, 
             states: {
                 "pressed": {
-                    "background": "#000000"
-                }
+                    "background": "#516475",
+                    "foreground": "#dfebf5",
+                    "icon_color": "#dfebf5",
+                },
+                "disabled": {
+                    "background": "#7a7e81",
+                    "foreground": "#3b434a",
+                    "icon_color": "#3b434a",
+                },
+            },
+        ),
+         "button_square": ( 
+            base: "button",
+            properties: {
+                "border_radius": 1,
+            }, 
+        ),
+        "button_single_content": (
+            base: "button",
+            properties: {
+                "spacing": 0,
+            },
+        ),
+        "check_box": (
+            properites: {
+                "icon_size": 18,
+                "background": "transparent",
+                "border_radius": 2,
+                "border_width": 1,
+                "border_brush": "#adb3b8",
+                "icon_color": "transparent",
+            },
+            states: {
+                "selected": {
+                    "background": "#efd035",
+                    "border_brush": "#efd035",
+                    "icon_color": "#3b434a",
+                },
+            },
+        ),
+        "grid": (
+            properties: {
+                "background": "transparent",
+            },
+        ),
+        "switch": (
+            properties: {
+                "width": 36,
+                "height": 32,
+            },
+        ),
+        "switch_track": (
+            properties: {
+                "height": 14,
+                "border_radius": 7,
+                "background": "#6C7A90",
             }
+        ),
+        "switch_toggle": (
+            properties: {
+                "width": 20,
+                "height": 20,
+                "border_radius": 10,
+                "background": "white",
+            },
+            states: {
+                "selected": {
+                    "background": "#F8DE4C",
+                },
+            },
+        ),
+        "container": (
+            properties: {
+                "padding": 4,
+            },
+        ),
+        "combo_box": (
+            properties: {
+                "foreground": "#dfebf5",
+                "background": "#3b434a",
+                "border_brush": "#647b91",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
+            states: {
+                "selected": {
+                    "border_brush": "#f8de4c",
+                },
+            },
+        ),
+        "combo_box_item": (
+            properties: {
+                "font_size": 12,
+                "foreground": "#ccdeed",
+                "background": "transparent",
+                "padding_left": 8,
+                "padding_right": 8,
+            },
+            states: {
+                "selected": {
+                    "foreground": "#3b434a",
+                    "background": "#e1bc21",
+                },
+            },
+        ),
+        "text_block_header": (
+            properties: {
+                 "font_size": 24,
+            },
+        ),
+        "text_box": (
+            properties: {
+                "height": 32,
+                "foreground": "#ccdeed",
+                "background": "#3b434a",
+                "border_brush": "#647b91",
+                "border_width": 1,
+                "border_radius": 3,
+                "padding": 6,
+            },
         ),
     }
 )
