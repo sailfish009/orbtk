@@ -16,8 +16,10 @@ Theme (
              }
         ),
         "button": ( 
+            base: "base",
             properties: {
                 "height": 36,
+                "foreground": "green",
                 "background": "#647b91",
                 "border_radius": 4,
                 "font_family": "Roboto Medium",

@@ -56,7 +56,7 @@ impl<'a> Theme {
     }
 
     /// Gets a property by the given name and a selector.
-    pub fn property(&'a self, property: &str, selector: &Selector) -> Option<&'a Value> {
+    pub fn property(&'a self, property: &str, selector: &Selector) -> Option<Value> {
         if let Some(style) = &selector.style {
             if let Some(style) = self.styles.get(style) {
                 return self.get_property(property, style, selector);
@@ -76,16 +76,22 @@ impl<'a> Theme {
         property: &str,
         style: &'a Style,
         selector: &Selector,
-    ) -> Option<&'a Value> {
+    ) -> Option<Value> {
         // state properties has the most priority
         if let Some(state) = &selector.state {
             if let Some(properties) = style.states.get(state) {
                 return self.get_property_value(property, properties);
             }
-
+ 
             // load state properties from based style if there are no other states (recursive through base style).
+            if style.base.is_empty() {
+                return None;
+            }
+
             if let Some(base_style) = self.styles.get(&style.base) {
-                return self.get_property(property, base_style, selector);
+                if let Some(properties) = base_style.states.get(state) {
+                    return self.get_property_value(property, properties);
+                }
             }
         }
 
@@ -96,6 +102,10 @@ impl<'a> Theme {
         }
 
         // load properties from based style if there are no other states (recursive through base style).
+        if style.base.is_empty() {
+            return None;
+        }
+
         if let Some(base_style) = self.styles.get(&style.base) {
             return self.get_property(property, base_style, selector);
         }
@@ -107,8 +117,8 @@ impl<'a> Theme {
         &self,
         property: &str,
         properties: &'a HashMap<String, Value>,
-    ) -> Option<&'a Value> {
-        properties.get(property)
+    ) -> Option<Value> {
+        Some(properties.get(property)?.clone())
     }
 }
 
@@ -127,7 +137,7 @@ fn default_style() -> String {
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Style {
     // set default string to base style
-    #[serde(default = "default_style")]
+    #[serde(default)]
     base: String,
     #[serde(default)]
     states: HashMap<String, HashMap<String, Value>>,

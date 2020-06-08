@@ -1,5 +1,7 @@
 use std::any::TypeId;
 
+use ron::Value;
+
 use crate::{
     css_engine::*,
     prelude::*,
@@ -242,17 +244,21 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        let selector = self.clone::<crate::theme::Selector>("_selector");
+        let selector = self.get::<crate::theme::Selector>("_selector");
 
         if !selector.dirty {
             return;
         }
 
-        // if self.has::<Brush>("foreground") {
-        //     if let Some(color) = self.theme.brush("color", &selector) {
-        //         self.set::<Brush>("foreground", color);
-        //     }
-        // }
+        if self.has::<Brush>("foreground") {
+            if let Some(brush) = self._theme.property("foreground", &selector) {
+          
+               if let Ok(brush) = brush.into_rust::<String>() {
+                self.set::<Brush>("foreground", Brush::from(brush));
+               }
+                // self.set::<Brush>("foreground", color);
+            }
+        }
 
         // if self.has::<Brush>("background") {
         //     if let Some(background) = self.theme.brush("background", &selector) {
