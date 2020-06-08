@@ -200,7 +200,7 @@ impl<'a> WidgetContainer<'a> {
 
         self.current_node = *entity;
 
-        if self.try_get::<crate::theme::Selector>("selector").is_some() {
+        if self.try_get::<crate::theme::Selector>("_selector").is_some() {
             if let Some(focus) = self.try_clone::<bool>("focused") {
                 update_state("focused", focus, self);
             }
@@ -225,7 +225,7 @@ impl<'a> WidgetContainer<'a> {
                 update_state("expanded", !expanded, self);
             }
 
-            if self.get::<crate::theme::Selector>("selector").dirty || force {
+            if self.get::<crate::theme::Selector>("_selector").dirty || force {
                 self.update_properties_by_theme();
             }
         }
@@ -238,112 +238,112 @@ impl<'a> WidgetContainer<'a> {
 
     /// Update all properties for the theme.
     pub fn update_properties_by_theme(&mut self) {
-        if !self.has::<Selector>("selector") {
+        if !self.has::<crate::theme::Selector>("_selector") {
             return;
         }
 
-        let selector = self.clone::<Selector>("selector");
+        let selector = self.clone::<crate::theme::Selector>("_selector");
 
-        if !selector.dirty() {
+        if !selector.dirty {
             return;
         }
 
-        if self.has::<Brush>("foreground") {
-            if let Some(color) = self.theme.brush("color", &selector) {
-                self.set::<Brush>("foreground", color);
-            }
-        }
+        // if self.has::<Brush>("foreground") {
+        //     if let Some(color) = self.theme.brush("color", &selector) {
+        //         self.set::<Brush>("foreground", color);
+        //     }
+        // }
 
-        if self.has::<Brush>("background") {
-            if let Some(background) = self.theme.brush("background", &selector) {
-                self.set::<Brush>("background", background);
-            }
-        }
+        // if self.has::<Brush>("background") {
+        //     if let Some(background) = self.theme.brush("background", &selector) {
+        //         self.set::<Brush>("background", background);
+        //     }
+        // }
 
-        if self.has::<Brush>("border_brush") {
-            if let Some(border_brush) = self.theme.brush("border-color", &selector) {
-                self.set::<Brush>("border_brush", border_brush);
-            }
-        }
+        // if self.has::<Brush>("border_brush") {
+        //     if let Some(border_brush) = self.theme.brush("border-color", &selector) {
+        //         self.set::<Brush>("border_brush", border_brush);
+        //     }
+        // }
 
-        if self.has::<f64>("border_radius") {
-            if let Some(radius) = self.theme.uint("border-radius", &selector) {
-                self.set::<f64>("border_radius", f64::from(radius));
-            }
-        }
+        // if self.has::<f64>("border_radius") {
+        //     if let Some(radius) = self.theme.uint("border-radius", &selector) {
+        //         self.set::<f64>("border_radius", f64::from(radius));
+        //     }
+        // }
 
-        if self.has::<f32>("opacity") {
-            if let Some(opacity) = self.theme.float("opacity", &selector) {
-                self.set::<f32>("opacity", opacity);
-            }
-        }
+        // if self.has::<f32>("opacity") {
+        //     if let Some(opacity) = self.theme.float("opacity", &selector) {
+        //         self.set::<f32>("opacity", opacity);
+        //     }
+        // }
 
-        if self.has::<Thickness>("border_width") {
-            if let Some(border_width) = self.theme.uint("border-width", &selector) {
-                self.set::<Thickness>("border_width", Thickness::from(border_width as f64));
-            }
-        }
+        // if self.has::<Thickness>("border_width") {
+        //     if let Some(border_width) = self.theme.uint("border-width", &selector) {
+        //         self.set::<Thickness>("border_width", Thickness::from(border_width as f64));
+        //     }
+        // }
 
-        self.update_font_properties_by_theme(&selector);
+        // self.update_font_properties_by_theme(&selector);
 
-        if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
-            if let Some(pad) = self.theme.uint("padding", &selector) {
-                padding.set_thickness(pad as f64);
-            }
+        // if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
+        //     if let Some(pad) = self.theme.uint("padding", &selector) {
+        //         padding.set_thickness(pad as f64);
+        //     }
 
-            if let Some(left) = self.theme.uint("padding-left", &selector) {
-                padding.set_left(left as f64);
-            }
+        //     if let Some(left) = self.theme.uint("padding-left", &selector) {
+        //         padding.set_left(left as f64);
+        //     }
 
-            if let Some(top) = self.theme.uint("padding-top", &selector) {
-                padding.set_top(top as f64);
-            }
+        //     if let Some(top) = self.theme.uint("padding-top", &selector) {
+        //         padding.set_top(top as f64);
+        //     }
 
-            if let Some(right) = self.theme.uint("padding-right", &selector) {
-                padding.set_right(right as f64);
-            }
+        //     if let Some(right) = self.theme.uint("padding-right", &selector) {
+        //         padding.set_right(right as f64);
+        //     }
 
-            if let Some(bottom) = self.theme.uint("padding-bottom", &selector) {
-                padding.set_bottom(bottom as f64);
-            }
-            self.set::<Thickness>("padding", padding);
-        }
+        //     if let Some(bottom) = self.theme.uint("padding-bottom", &selector) {
+        //         padding.set_bottom(bottom as f64);
+        //     }
+        //     self.set::<Thickness>("padding", padding);
+        // }
 
-        if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
-            if let Some(width) = self.theme.uint("width", &selector) {
-                constraint.set_width(width as f64);
-            }
+        // if let Some(mut constraint) = self.try_clone::<Constraint>("constraint") {
+        //     if let Some(width) = self.theme.uint("width", &selector) {
+        //         constraint.set_width(width as f64);
+        //     }
 
-            if let Some(height) = self.theme.uint("height", &selector) {
-                constraint.set_height(height as f64);
-            }
+        //     if let Some(height) = self.theme.uint("height", &selector) {
+        //         constraint.set_height(height as f64);
+        //     }
 
-            if let Some(min_width) = self.theme.uint("min-width", &selector) {
-                constraint.set_min_width(min_width as f64);
-            }
+        //     if let Some(min_width) = self.theme.uint("min-width", &selector) {
+        //         constraint.set_min_width(min_width as f64);
+        //     }
 
-            if let Some(min_height) = self.theme.uint("min-height", &selector) {
-                constraint.set_min_height(min_height as f64);
-            }
+        //     if let Some(min_height) = self.theme.uint("min-height", &selector) {
+        //         constraint.set_min_height(min_height as f64);
+        //     }
 
-            if let Some(max_width) = self.theme.uint("max-width", &selector) {
-                constraint.set_max_width(max_width as f64);
-            }
+        //     if let Some(max_width) = self.theme.uint("max-width", &selector) {
+        //         constraint.set_max_width(max_width as f64);
+        //     }
 
-            if let Some(max_height) = self.theme.uint("max-height", &selector) {
-                constraint.set_max_height(max_height as f64);
-            }
+        //     if let Some(max_height) = self.theme.uint("max-height", &selector) {
+        //         constraint.set_max_height(max_height as f64);
+        //     }
 
-            self.set::<Constraint>("constraint", constraint);
-        }
+        //     self.set::<Constraint>("constraint", constraint);
+        // }
 
-        if self.has::<f64>("spacing") {
-            if let Some(spacing) = self.theme.uint("spacing", &selector) {
-                self.set::<f64>("spacing", spacing.into());
-            }
-        }
+        // if self.has::<f64>("spacing") {
+        //     if let Some(spacing) = self.theme.uint("spacing", &selector) {
+        //         self.set::<f64>("spacing", spacing.into());
+        //     }
+        // }
 
-        self.get_mut::<Selector>("selector").set_dirty(true);
+        // self.get_mut::<Selector>("selector").set_dirty(true);
     }
 
     pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {

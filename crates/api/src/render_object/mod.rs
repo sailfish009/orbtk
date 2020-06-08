@@ -76,10 +76,20 @@ pub trait RenderObject: Any {
             }
         }
 
+        let root = ecm.entity_store().root;
+
+        // todo remove
+        let _theme = ecm
+            .component_store()
+            .get::<crate::theme::Theme>("_theme", root.unwrap())
+            .unwrap()
+            .clone();
+
         self.render_self(
             &mut Context::new(
                 (entity, ecm),
                 &theme,
+                &_theme,
                 context_provider,
                 render_context,
             ),

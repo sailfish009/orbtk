@@ -36,7 +36,15 @@ impl Layout for FixedSizeLayout {
             return *self.desired_size.borrow();
         }
 
-        let widget = WidgetContainer::new(entity, ecm, theme);
+        let root = ecm.entity_store().root;
+
+        let _theme = ecm
+        .component_store()
+        .get::<crate::theme::Theme>("_theme", root.unwrap())
+        .unwrap()
+        .clone();
+
+        let widget = WidgetContainer::new(entity, ecm, theme, &_theme);
 
         let horizontal_alignment: Alignment = *widget.get("horizontal_alignment");
         let vertical_alignment: Alignment = *widget.get("vertical_alignment");

@@ -40,12 +40,12 @@ impl State for SwitchState {
         {
             let mut switch_toggle = ctx.get_widget(self.switch_toggle);
 
+            update_state("selected", self.selected, &mut switch_toggle);
+
             if self.selected {
                 switch_toggle.set("horizontal_alignment", Alignment::from("end"));
-                add_selector_to_widget("selected", &mut switch_toggle);
             } else {
                 switch_toggle.set("horizontal_alignment", Alignment::from("start"));
-                remove_selector_from_widget("selected", &mut switch_toggle);
             }
 
             switch_toggle.update_theme_by_state(true);

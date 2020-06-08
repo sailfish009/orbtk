@@ -23,10 +23,10 @@ mod widget_container;
 /// Adds the given `pseudo_class` to the css selector of the given `widget`.
 pub fn update_state(state: &str, flag: bool, widget: &mut WidgetContainer<'_>) {
     if let Some(selector) = widget.try_get_mut::<crate::theme::Selector>("_selector") {
-        if flag && (selector.state.is_none() || selector.state.is_some() && !selector.state.unwrap().eq(state)) {
+        if flag && (selector.state.is_none() || selector.state.is_some() && !selector.state.as_ref().unwrap().eq(state)) {
             selector.set_state(state);
             selector.dirty = true;
-        } else if !flag && selector.state.is_some() && selector.state.unwrap().eq(state) {
+        } else if !flag && selector.state.is_some() && selector.state.as_ref().unwrap().eq(state) {
             selector.state = None;
             selector.dirty = true;
         }
