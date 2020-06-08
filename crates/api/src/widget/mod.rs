@@ -21,34 +21,16 @@ mod template;
 mod widget_container;
 
 /// Adds the given `pseudo_class` to the css selector of the given `widget`.
-pub fn add_selector_to_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-        selector.pseudo_classes.insert(String::from(pseudo_class));
-        selector.set_dirty(true);
-    }
-}
-
-/// Removes the given `pseudo_class` from the css selector of the given `widget`.
-pub fn remove_selector_from_widget(pseudo_class: &str, widget: &mut WidgetContainer<'_>) {
-    if let Some(selector) = widget.try_get_mut::<Selector>("selector") {
-        selector.pseudo_classes.remove(pseudo_class);
-        selector.set_dirty(true);
-    }
-}
-
-/// Adds the given `pseudo_class` to the css selector of the given `widget`.
-pub fn add_state(state: &str, widget: &mut WidgetContainer<'_>) {
+pub fn update_state(state: &str, flag: bool, widget: &mut WidgetContainer<'_>) {
     if let Some(selector) = widget.try_get_mut::<crate::theme::Selector>("_selector") {
-        selector.state = Some(String::from(state));
-        selector.dirty = true;
-    }
-}
-
-/// Removes the given `pseudo_class` from the css selector of the given `widget`.
-pub fn remove_state(state: &str, widget: &mut WidgetContainer<'_>) {
-    if let Some(selector) = widget.try_get_mut::<crate::theme::Selector>("_selector") {
-        selector.state = None;
-        selector.dirty = false;
+        if flag && (selector.state.is_none() || selector.state.is_some() && !selector.state.unwrap().eq(state)) {
+            selector.set_state(state);
+            selector.dirty = true;
+        } else if !flag && selector.state.is_some() && selector.state.unwrap().eq(state) {
+            selector.state = None;
+            selector.dirty = true;
+        }
+   
     }
 }
 

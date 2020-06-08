@@ -17,6 +17,7 @@ impl EventStateSystem {
         &self,
         entity: Entity,
         theme: &Theme,
+        _theme: &crate::theme::Theme,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_context: &mut RenderContext2D,
     ) {
@@ -26,6 +27,7 @@ impl EventStateSystem {
             let mut ctx = Context::new(
                 (entity, ecm),
                 &theme,
+                _theme,
                 &self.context_provider,
                 render_context,
             );
@@ -87,6 +89,12 @@ impl EventStateSystem {
         let theme = ecm
             .component_store()
             .get::<Theme>("theme", root)
+            .unwrap()
+            .clone();
+
+        let _theme = ecm
+            .component_store()
+            .get::<crate::theme::Theme>("_theme", root)
             .unwrap()
             .clone();
 
@@ -184,7 +192,7 @@ impl EventStateSystem {
                 if event.downcast_ref::<ScrollEvent>().is_ok() {
                     if check_mouse_condition(
                         mouse_position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(current_node, ecm, &theme, &_theme),
                     ) && has_handler
                     {
                         matching_nodes.push(current_node);
@@ -195,13 +203,13 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<ClickEvent>() {
                     if check_mouse_condition(
                         event.position,
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(current_node, ecm, &theme, &_theme),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             if !check_mouse_condition(
                                 event.position,
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(*op, ecm, &theme, &_theme),
                             ) {
                                 add = false;
                             }
@@ -216,14 +224,14 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<MouseDownEvent>() {
                     if check_mouse_condition(
                         Point::new(event.x, event.y),
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(current_node, ecm, &theme, &_theme),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
                                 Point::new(event.x, event.y),
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(*op, ecm, &theme, &_theme),
                             ) && has_handler
                             {
                                 add = false;
@@ -239,14 +247,14 @@ impl EventStateSystem {
                 if let Ok(event) = event.downcast_ref::<MouseMoveEvent>() {
                     if check_mouse_condition(
                         Point::new(event.x, event.y),
-                        &WidgetContainer::new(current_node, ecm, &theme),
+                        &WidgetContainer::new(current_node, ecm, &theme, &_theme),
                     ) {
                         let mut add = true;
                         if let Some(op) = clipped_parent.get(0) {
                             // todo: improve check path if exists
                             if !check_mouse_condition(
                                 Point::new(event.x, event.y),
-                                &WidgetContainer::new(*op, ecm, &theme),
+                                &WidgetContainer::new(*op, ecm, &theme, &_theme),
                             ) {
                                 add = false;
                             }
@@ -259,7 +267,8 @@ impl EventStateSystem {
                 }
 
                 if unknown_event
-                    && *WidgetContainer::new(current_node, ecm, &theme).get::<bool>("enabled")
+                    && *WidgetContainer::new(current_node, ecm, &theme, &_theme)
+                        .get::<bool>("enabled")
                 {
                     if has_handler {
                         matching_nodes.push(current_node);
@@ -359,6 +368,13 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                 .get::<Theme>("theme", root)
                 .unwrap()
                 .clone();
+
+            let _theme = ecm
+                .component_store()
+                .get::<crate::theme::Theme>("_theme", root)
+                .unwrap()
+                .clone();
+
             let mut current_node = root;
             let mut remove_widget_list: Vec<Entity> = vec![];
             loop {
@@ -383,6 +399,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                             let mut ctx = Context::new(
                                 (current_node, ecm),
                                 &theme,
+                                &_theme,
                                 &self.context_provider,
                                 render_context,
                             );
@@ -405,6 +422,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                                 let mut ctx = Context::new(
                                     (key, ecm),
                                     &theme,
+                                    &_theme,
                                     &self.context_provider,
                                     render_context,
                                 );
@@ -424,11 +442,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
 
                             // remove children of target widget.
                             for entity in children.iter().rev() {
-                                self.remove_widget(*entity, &theme, ecm, render_context);
+                                self.remove_widget(*entity, &theme, &_theme, ecm, render_context);
                             }
 
                             // remove target widget
-                            self.remove_widget(remove_widget, &theme, ecm, render_context);
+                            self.remove_widget(remove_widget, &theme, &_theme, ecm, render_context);
                         }
                     }
                 }

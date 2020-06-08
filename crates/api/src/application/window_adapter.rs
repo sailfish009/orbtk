@@ -174,6 +174,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
     let context_provider = ContextProvider::new(sender, request_sender.clone(), app_name);
 
     let theme = crate::theme::default_theme();
+    let _theme = crate::theme::default_theme_r();
 
     let window = {
         let overlay = Overlay::create().build(&mut BuildContext::new(
@@ -183,6 +184,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
             &theme,
+            &_theme
         ));
 
         {
@@ -197,6 +199,7 @@ pub fn create_window<F: Fn(&mut BuildContext) -> Entity + 'static>(
             &context_provider.handler_map,
             &mut *context_provider.states.borrow_mut(),
             &theme,
+            &_theme
         ));
 
         {

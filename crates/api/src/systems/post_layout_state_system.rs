@@ -16,6 +16,7 @@ impl PostLayoutStateSystem {
         &self,
         entity: Entity,
         theme: &Theme,
+        _theme: &crate::theme::Theme,
         ecm: &mut EntityComponentManager<Tree, StringComponentStore>,
         render_context: &mut RenderContext2D,
     ) {
@@ -23,6 +24,7 @@ impl PostLayoutStateSystem {
             let mut ctx = Context::new(
                 (entity, ecm),
                 &theme,
+                &_theme,
                 &self.context_provider,
                 render_context,
             );
@@ -66,6 +68,13 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
             .get::<Theme>("theme", root)
             .unwrap()
             .clone();
+
+            let _theme = ecm
+            .component_store()
+            .get::<crate::theme::Theme>("_theme", root)
+            .unwrap()
+            .clone();
+
         let mut remove_widget_list: Vec<Entity> = vec![];
 
         {
@@ -80,6 +89,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
                     let mut ctx = Context::new(
                         (key, ecm),
                         &theme,
+                        &_theme,
                         &self.context_provider,
                         render_context,
                     );
@@ -98,11 +108,11 @@ impl System<Tree, StringComponentStore, RenderContext2D> for PostLayoutStateSyst
 
                     // remove children of target widget.
                     for entity in children.iter().rev() {
-                        self.remove_widget(*entity, &theme, ecm, render_context);
+                        self.remove_widget(*entity, &theme, &_theme, ecm, render_context);
                     }
 
                     // remove target widget
-                    self.remove_widget(remove_widget, &theme, ecm, render_context);
+                    self.remove_widget(remove_widget, &theme, &_theme, ecm, render_context);
                 }
             }
         }

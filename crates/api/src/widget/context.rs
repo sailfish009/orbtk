@@ -18,6 +18,7 @@ pub struct Context<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     pub entity: Entity,
     pub theme: &'a ThemeValue,
+    pub _theme: &'a crate::theme::Theme,
     provider: &'a ContextProvider,
     new_states: BTreeMap<Entity, Box<dyn State>>,
     remove_widget_list: Vec<Entity>,
@@ -38,6 +39,7 @@ impl<'a> Context<'a> {
             &'a mut EntityComponentManager<Tree, StringComponentStore>,
         ),
         theme: &'a ThemeValue,
+        _theme: &'a crate::theme::Theme,
         provider: &'a ContextProvider,
         render_context: &'a mut RenderContext2D,
     ) -> Self {
@@ -45,6 +47,7 @@ impl<'a> Context<'a> {
             entity: ecs.0,
             ecm: ecs.1,
             theme,
+            _theme,
             provider,
             new_states: BTreeMap::new(),
             remove_widget_list: vec![],
@@ -56,7 +59,7 @@ impl<'a> Context<'a> {
 
     /// Returns a specific widget.
     pub fn get_widget(&mut self, entity: Entity) -> WidgetContainer<'_> {
-        WidgetContainer::new(entity, self.ecm, self.theme)
+        WidgetContainer::new(entity, self.ecm, self.theme, self._theme)
     }
 
     /// Returns the widget of the current state ctx.
@@ -192,6 +195,7 @@ impl<'a> Context<'a> {
             &self.provider.handler_map,
             &mut self.new_states,
             self.theme,
+            self._theme
         )
     }
 

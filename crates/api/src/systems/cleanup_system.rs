@@ -25,6 +25,12 @@ impl System<Tree, StringComponentStore, RenderContext2D> for CleanupSystem {
             .unwrap()
             .clone();
 
+        let _theme = ecm
+            .component_store()
+            .get::<crate::theme::Theme>("_theme", root)
+            .unwrap()
+            .clone();
+
         let mut current_node = root;
 
         loop {
@@ -48,6 +54,7 @@ impl System<Tree, StringComponentStore, RenderContext2D> for CleanupSystem {
                     let mut ctx = Context::new(
                         (current_node, ecm),
                         &theme,
+                        &_theme,
                         &self.context_provider,
                         render_context,
                     );

@@ -17,6 +17,20 @@ pub struct Selector {
     pub dirty: bool,
 }
 
+impl Selector {
+    pub fn new(style: impl Into<String>) -> Self {
+        Selector {
+            style: Some(style.into()),
+            state: None,
+            dirty: true
+        }
+    }
+
+    pub fn set_state(&mut self, state: impl Into<String>) {
+        self.state = Some(state.into());
+    }
+}
+
 /// Used to store and read properties that could be requested by a given property name and a selector.
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Theme {

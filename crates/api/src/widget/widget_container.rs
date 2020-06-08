@@ -13,6 +13,7 @@ pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     current_node: Entity,
     theme: &'a ThemeValue,
+    _theme: &'a crate::theme::Theme
 }
 
 impl<'a> WidgetContainer<'a> {
@@ -21,11 +22,13 @@ impl<'a> WidgetContainer<'a> {
         root: Entity,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         theme: &'a ThemeValue,
+        _theme: &'a crate::theme::Theme
     ) -> Self {
         WidgetContainer {
             ecm,
             current_node: root,
             theme,
+            _theme
         }
     }
 
@@ -197,70 +200,32 @@ impl<'a> WidgetContainer<'a> {
 
         self.current_node = *entity;
 
-        if let Some(selector) = self.try_clone::<Selector>("selector") {
-            let mut update = false;
-
+        if self.try_get::<crate::theme::Selector>("selector").is_some() {
             if let Some(focus) = self.try_clone::<bool>("focused") {
-                if focus && !selector.pseudo_classes.contains("focus") {
-                    add_state("focus", self);
-                    update = true;
-                } else if !focus && selector.pseudo_classes.contains("focus") {
-                    remove_state("focus", self);
-                    update = true;
-                }
+                update_state("focused", focus, self);
             }
 
             if let Some(selected) = self.try_clone::<bool>("selected") {
-                if selected && !selector.pseudo_classes.contains("selected") {
-                    add_state("selected", self);
-                    update = true;
-                } else if !selected && selector.pseudo_classes.contains("selected") {
-                    remove_state("selected", self);
-                    update = true;
-                }
+                update_state("selected", selected, self);
             }
 
             if let Some(pressed) = self.try_clone::<bool>("pressed") {
-                if pressed && !selector.pseudo_classes.contains("active") {
-                    add_state("active", self);
-                    update = true;
-                } else if !pressed && selector.pseudo_classes.contains("active") {
-                    remove_state("active", self);
-                    update = true;
-                }
+                update_state("pressed", pressed, self);
             }
 
             if let Some(enabled) = self.try_clone::<bool>("enabled") {
-                if !enabled && !selector.pseudo_classes.contains("disabled") {
-                    add_state("disabled", self);
-                    update = true;
-                } else if enabled && selector.pseudo_classes.contains("disabled") {
-                    remove_state("disabled", self);
-                    update = true;
-                }
+                update_state("disabled", !enabled, self);
             }
 
             if let Some(text) = self.try_clone::<String16>("text") {
-                if text.is_empty() && !selector.pseudo_classes.contains("empty") {
-                    add_state("empty", self);
-                    update = true;
-                } else if !text.is_empty() && selector.pseudo_classes.contains("empty") {
-                    remove_state("empty", self);
-                    update = true;
-                }
+                update_state("empty", text.is_empty(), self);
             }
 
             if let Some(expanded) = self.try_clone::<bool>("expanded") {
-                if expanded && !selector.pseudo_classes.contains("expanded") {
-                    add_state("expanded", self);
-                    update = true;
-                } else if !expanded && selector.pseudo_classes.contains("expanded") {
-                    remove_state("expanded", self);
-                    update = true;
-                }
+                update_state("expanded", !expanded, self);
             }
 
-            if update || force {
+            if self.get::<crate::theme::Selector>("selector").dirty || force {
                 self.update_properties_by_theme();
             }
         }
