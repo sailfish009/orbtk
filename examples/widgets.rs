@@ -459,6 +459,10 @@ fn main() {
     // use this only if you want to run it as web application.
     orbtk::initialize();
 
+    let theme = orbtk::theme::default_theme_r();
+
+    println!("{:?}", theme);
+
     Application::new()
         .window(|ctx| {
             Window::create()

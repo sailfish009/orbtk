@@ -17,6 +17,9 @@ pub mod fonts;
 pub mod prelude;
 pub mod vector_graphics;
 
+pub mod theme;
+
+pub const DEFAULT_THEME_RON: &str = include_str!("dark.ron");
 pub const DEFAULT_THEME_CSS: &str = include_str!("dark.css");
 pub const LIGHT_THEME_EXTENSION_CSS: &str = include_str!("light.css");
 
@@ -36,4 +39,13 @@ pub fn default_theme() -> Theme {
 
 pub fn light_theme() -> Theme {
     Theme::create_from_css(&LIGHT_THEME_CSS[..]).build()
+}
+
+pub fn default_theme_r() -> theme::Theme {
+    theme::Theme::from(DEFAULT_THEME_RON)
+}
+
+lazy_static! {
+    pub static ref DEFAULT_THEME_R: Arc<theme::Theme> =
+        Arc::new(theme::Theme::from(DEFAULT_THEME_RON));
 }

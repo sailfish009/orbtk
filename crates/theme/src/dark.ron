@@ -1,0 +1,19 @@
+Theme (
+    name: "orbtk-dark",
+    styles: {
+        "base": (
+
+        ),
+        "button": (
+            base: "base",
+            properties: {
+                "background": "#ffffff"
+            },
+            states: {
+                "pressed": {
+                    "background": "#000000"
+                }
+            }
+        ),
+    }
+)
