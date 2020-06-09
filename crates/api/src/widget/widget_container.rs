@@ -15,7 +15,7 @@ pub struct WidgetContainer<'a> {
     ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
     current_node: Entity,
     theme: &'a ThemeValue,
-    _theme: &'a crate::theme::Theme
+    _theme: &'a crate::theme::Theme,
 }
 
 impl<'a> WidgetContainer<'a> {
@@ -24,13 +24,13 @@ impl<'a> WidgetContainer<'a> {
         root: Entity,
         ecm: &'a mut EntityComponentManager<Tree, StringComponentStore>,
         theme: &'a ThemeValue,
-        _theme: &'a crate::theme::Theme
+        _theme: &'a crate::theme::Theme,
     ) -> Self {
         WidgetContainer {
             ecm,
             current_node: root,
             theme,
-            _theme
+            _theme,
         }
     }
 
@@ -202,7 +202,7 @@ impl<'a> WidgetContainer<'a> {
 
         self.current_node = *entity;
 
-        if self.try_get::<crate::theme::Selector>("_selector").is_some() {
+        if self.has::<crate::theme::Selector>("_selector") {
             if let Some(focus) = self.try_clone::<bool>("focused") {
                 update_state("focused", focus, self);
             }
@@ -244,7 +244,7 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        let selector = self.get::<crate::theme::Selector>("_selector");
+        let selector = self.clone::<crate::theme::Selector>("_selector");
 
         if !selector.dirty {
             return;
@@ -252,11 +252,24 @@ impl<'a> WidgetContainer<'a> {
 
         if self.has::<Brush>("foreground") {
             if let Some(brush) = self._theme.property("foreground", &selector) {
-          
-               if let Ok(brush) = brush.into_rust::<String>() {
-                self.set::<Brush>("foreground", Brush::from(brush));
-               }
-                // self.set::<Brush>("foreground", color);
+                if let Ok(brush) = brush.into_rust::<String>() {
+                    println!("sel: {:?}, {}", selector.style, brush);
+                    self.set("foreground", Brush::from(brush));
+                }
+            }
+        }
+
+        if self.has::<Brush>("background") {
+            if let Some(brush) = self._theme.property("background", &selector) {
+                if let Ok(brush) = brush.into_rust::<String>() {
+                    if let Some(state) = &selector.state {
+                        if state.eq("pressed") {
+                            println!("sel: {:?}, {}", selector.style, brush);
+                        }
+                    }
+
+                    self.set("background", Brush::from(brush));
+                }
             }
         }
 
@@ -349,7 +362,7 @@ impl<'a> WidgetContainer<'a> {
         //     }
         // }
 
-        // self.get_mut::<Selector>("selector").set_dirty(true);
+        self.get_mut::<crate::theme::Selector>("_selector").dirty = false;
     }
 
     pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {

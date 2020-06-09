@@ -82,7 +82,7 @@ widget!(
 impl Template for ScrollIndicator {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("ScrollIndicator")
-            .element("scroll-indicator")
+            .style("scroll-indicator")
             .vertical_alignment("stretch")
             .horizontal_alignment("stretch")
             .padding(0.0)
@@ -90,7 +90,7 @@ impl Template for ScrollIndicator {
                 Grid::create()
                     .child(
                         ScrollBar::create()
-                            .element("scroll-bar")
+                            .style("scroll-bar")
                             .id("vertical-scroll-bar")
                             .min_height(8.0)
                             .margin((0.0, 0.0, 0.0, 6.0))
@@ -100,7 +100,7 @@ impl Template for ScrollIndicator {
                     )
                     .child(
                         ScrollBar::create()
-                            .element("scroll-bar")
+                            .style("scroll-bar")
                             .id("horizontal-scroll-bar")
                             .min_width(8.0)
                             .margin((0.0, 0.0, 6.0, 0.0))

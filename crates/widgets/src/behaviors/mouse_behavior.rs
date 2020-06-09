@@ -22,13 +22,9 @@ impl MouseBehaviorState {
 
 impl State for MouseBehaviorState {
     fn update(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {
-    
-        // println!("Mousebehavior");
         if self.action.is_none() || !ctx.widget().get::<bool>("enabled") {
             return;
         }
-
-        // crate::shell::CONSOLE.time("mouse-behavior");
 
         match self.action.unwrap() {
             Action::Press(_) => {
@@ -54,13 +50,10 @@ impl State for MouseBehaviorState {
             }
         };
 
-        // crate::shell::CONSOLE.time("update_state");
         let target: Entity = (*ctx.widget().get::<u32>("target")).into();
         ctx.get_widget(target).update_theme_by_state(false);
-        // crate::shell::CONSOLE.time_end("update_state");
 
         self.action = None;
-        // crate::shell::CONSOLE.time_end("mouse-behavior");
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context<'_>) {

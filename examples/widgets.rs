@@ -111,7 +111,7 @@ impl State for MainViewState {
 fn create_header(ctx: &mut BuildContext, text: &str) -> Entity {
     TextBlock::create()
         .text(text)
-        .element("text-block")
+        .style("text-block")
         .class("h1")
         .build(ctx)
 }
@@ -205,8 +205,7 @@ impl Template for MainView {
                             .child(
                                 Button::create()
                                     .text("Primary")
-                                    .element("button")
-                                    .class("primary")
+                                    .style("button_primary")
                                     .margin((0.0, 8.0, 0.0, 0.0))
                                     .icon(material_font_icons::CHECK_FONT_ICON)
                                     .attach(Grid::column(0))
@@ -240,7 +239,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::create()
                                     .margin((0.0, 8.0, 0.0, 0.0))
-                                    .element("h1")
+                                    .style("h1")
                                     .id("value_text")
                                     .text("0")
                                     .horizontal_alignment("center")
@@ -335,7 +334,7 @@ impl Template for MainView {
                             .child(
                                 TextBlock::create()
                                     .text("Items")
-                                    .element("text-block")
+                                    .style("text-block")
                                     .class("h1")
                                     .attach(Grid::column(0))
                                     .attach(Grid::column_span(3))
@@ -365,7 +364,7 @@ impl Template for MainView {
                             )
                             .child(
                                 ItemsWidget::create()
-                                    .element("items-widget")
+                                    .style("items-widget")
                                     .id("items")
                                     .padding((4.0, 4.0, 4.0, 2.0))
                                     .attach(Grid::column(0))
@@ -387,7 +386,7 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::create()
-                                    .element("button")
+                                    .style("button")
                                     .class("single_content")
                                     .id("remove-item-button")
                                     .icon(material_font_icons::MINUS_FONT_ICON)
@@ -402,7 +401,7 @@ impl Template for MainView {
                             )
                             .child(
                                 Button::create()
-                                    .element("button")
+                                    .style("button")
                                     .class("single_content")
                                     .id("add-item-button")
                                     .icon(material_font_icons::ADD_FONT_ICON)
@@ -439,7 +438,7 @@ impl Template for MainView {
                             .child(
                                 // todo: wrong text width????
                                 TextBlock::create()
-                                    .element("text-block")
+                                    .style("text-block")
                                     .id("selection")
                                     .max_width(120.0)
                                     .attach(Grid::column(0))

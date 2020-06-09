@@ -59,7 +59,7 @@ macro_rules! widget {
             width: Option<f64>,
             height: Option<f64>,
             name: Option<String>,
-            element: Option<String>,
+            style: Option<String>,
             id: Option<String>,
             classes: HashSet<String>,
             horizontal_alignment: Alignment,
@@ -124,12 +124,12 @@ macro_rules! widget {
             }
 
             /// Sets the element selector.
-            pub fn element(mut self, element: impl Into<String>) -> Self {
-                if !self.element.is_none() {
+            pub fn style(mut self, style: impl Into<String>) -> Self {
+                if !self.style.is_none() {
                     return self;
                 }
 
-                self.element = Some(element.into());
+                self.style = Some(style.into());
                 self
             }
 
@@ -373,14 +373,15 @@ macro_rules! widget {
                 ctx.register_property("clip", entity, this.clip);
                 ctx.register_property("opacity", entity, this.opacity);
 
-                if this.element.is_some() || this.id.is_some() || this.classes.len() > 0 {
+                if this.style.is_some() || this.id.is_some() || this.classes.len() > 0 {
                     let mut _selector = crate::theme::Selector::default();
+                    _selector.dirty = true;
                   
                     let mut selector = Selector::new();
                     //selector.set_dirty(true);
-                    if let Some(element) = this.element {
-                        selector = selector.with(element.clone());
-                        _selector.style = Some(element);
+                    if let Some(style) = this.style {
+                        // selector = selector.with(element.clone());
+                        _selector.style = Some(style);
                     }
                     if let Some(id) = this.id {
                         selector = selector.id(id);

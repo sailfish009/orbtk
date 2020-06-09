@@ -93,7 +93,7 @@ widget!(
 impl Template for Switch {
     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
         self.name("Switch")
-            .element("switch")
+            .style("switch")
             .pressed(false)
             .selected(false)
             .width(36.0)
@@ -114,13 +114,13 @@ impl Template for Switch {
                         Grid::create()
                             .child(
                                 Container::create()
-                                    .element(SWITCH_TRACK)
+                                    .style(SWITCH_TRACK)
                                     .vertical_alignment("center")
                                     .build(ctx),
                             )
                             .child(
                                 Container::create()
-                                    .element(SWITCH_TOGGLE)
+                                    .style(SWITCH_TOGGLE)
                                     .id(SWITCH_TOGGLE)
                                     .vertical_alignment("center")
                                     .horizontal_alignment("start")

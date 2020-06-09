@@ -197,7 +197,7 @@ impl Template for Window {
         self.name("Window")
             .background(colors::BRIGHT_GRAY_COLOR)
             .size(100.0, 100.0)
-            .element(ELEMENT_WINDOW)
+            .style(ELEMENT_WINDOW)
             .title("Window")
             .theme(default_theme())
             .resizeable(false)

@@ -19,7 +19,7 @@ Theme (
             base: "base",
             properties: {
                 "height": 36,
-                "foreground": "green",
+                "foreground": "#dfebf5",
                 "background": "#647b91",
                 "border_radius": 4,
                 "font_family": "Roboto Medium",
@@ -27,14 +27,22 @@ Theme (
             states: {
                 "pressed": {
                     "background": "#516475",
-                    "foreground": "#dfebf5",
-                    "icon_color": "#dfebf5",
+                    "foreground": "#000000",
+                    "icon_brush": "#dfebf5",
                 },
                 "disabled": {
                     "background": "#7a7e81",
                     "foreground": "#3b434a",
-                    "icon_color": "#3b434a",
+                    "icon_brush": "#3b434a",
                 },
+            },
+        ),
+        "button_primary": (
+            base: "button",
+            properties: {
+                "background": "#efd035",
+                "foreground": "#3b434a",
+                "icon_brush": "#3b434a",
             },
         ),
          "button_square": ( 
@@ -56,13 +64,13 @@ Theme (
                 "border_radius": 2,
                 "border_width": 1,
                 "border_brush": "#adb3b8",
-                "icon_color": "transparent",
+                "icon_brush": "transparent",
             },
             states: {
                 "selected": {
                     "background": "#efd035",
                     "border_brush": "#efd035",
-                    "icon_color": "#3b434a",
+                    "icon_brush": "#3b434a",
                 },
             },
         ),
