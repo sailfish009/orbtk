@@ -3,10 +3,10 @@ Theme (
         "base": (
             properties: {
                 "background": "$BRIGHT_GRAY",
-                "font_size": 16,
-                "font_family": "Roboto Medium",
-                "icon_size": 16,
-                "icon_family": "Material Icons",
+                "font_size": "$FONT_SIZE_16",
+                "font_family": "$MEDIUM_FONT",
+                "icon_size": "ICON_SIZE_16",
+                "icon_family": "$ICON_FONT",
             },
         ),
         "window": (
@@ -21,7 +21,7 @@ Theme (
                 "foreground": "$LINK_WATER",
                 "background": "$LYNCH",
                 "border_radius": 4,
-                "font_family": "Roboto Medium",
+                "font_family": "$MEDIUM_FONT",
             }, 
             states: {
                 "pressed": {
@@ -57,8 +57,9 @@ Theme (
             },
         ),
         "check_box": (
+              base: "base",
             properites: {
-                "icon_size": 18,
+                "icon_size": "ICON_SIZE_18",
                 "background": "transparent",
                 "border_radius": 2,
                 "border_width": 1,
@@ -74,17 +75,20 @@ Theme (
             },
         ),
         "grid": (
+            base: "base",
             properties: {
                 "background": "transparent",
             },
         ),
         "switch": (
+            base: "base",
             properties: {
                 "width": 36,
                 "height": 32,
             },
         ),
         "switch_track": (
+            base: "base",
             properties: {
                 "height": 14,
                 "border_radius": 7,
@@ -92,6 +96,7 @@ Theme (
             }
         ),
         "switch_toggle": (
+            base: "base",
             properties: {
                 "width": 20,
                 "height": 20,
@@ -105,11 +110,13 @@ Theme (
             },
         ),
         "container": (
+            base: "base",
             properties: {
                 "padding": 4,
             },
         ),
         "combo_box": (
+            base: "base",
             properties: {
                 "foreground": "$LINK_WATER",
                 "background": "$BRIGHT_GRAY",
@@ -125,8 +132,9 @@ Theme (
             },
         ),
         "combo_box_item": (
+            base: "base",
             properties: {
-                "font_size": 12,
+               "font_size": "$FONT_SIZE_12",
                 "foreground": "$PERIWINDLE_GRAY",
                 "background": "transparent",
                 "padding_left": 8,
@@ -140,11 +148,13 @@ Theme (
             },
         ),
         "text_block_header": (
+            base: "base",
             properties: {
-                 "font_size": 24,
+                "font_size": "$FONT_SIZE_24",
             },
         ),
         "text_box": (
+            base: "base",
             properties: {
                 "height": 32,
                 "foreground": "$PERIWINDLE_GRAY",

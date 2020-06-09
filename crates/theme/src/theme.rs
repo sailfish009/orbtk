@@ -3,7 +3,8 @@ use std::{any::Any, collections::HashMap};
 use ron::{de::from_str, Value};
 use serde_derive::{Deserialize, Serialize};
 
-pub static BASE_STYLE: &str = "base";
+static BASE_STYLE: &str = "base";
+static RESOURCE_KEY: &str = "$";
 
 /// The selector is used to read a property value from the `Theme`.
 #[derive(Debug, Clone, Default)]
@@ -121,7 +122,17 @@ impl<'a> Theme {
         property: &str,
         properties: &'a HashMap<String, Value>,
     ) -> Option<Value> {
-        Some(properties.get(property)?.clone())
+
+        let property = properties.get(property)?;
+
+        // load from resources if the value is a key.
+        if let Ok(key) = property.clone().into_rust::<String>() {
+            if key.starts_with(RESOURCE_KEY) {
+                return Some(self.resources.get(&key.replace(RESOURCE_KEY, ""))?.clone());
+            }
+        }
+
+        Some(property.clone())
     }
 }
 
@@ -129,10 +140,6 @@ impl From<&str> for Theme {
     fn from(s: &str) -> Self {
         from_str(s).unwrap()
     }
-}
-
-fn default_style() -> String {
-    BASE_STYLE.to_string()
 }
 
 /// Defines a style. A style could be base on other styles and contains a list for properties
