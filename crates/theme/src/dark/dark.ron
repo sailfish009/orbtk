@@ -26,7 +26,7 @@ Theme (
             states: {
                 "pressed": {
                     "background": "$BLUE_BYOUX",
-                    "foreground": "&BLACK",
+                    "foreground": "$BLACK",
                     "icon_brush": "$LINK_WATER",
                 },
                 "disabled": {

@@ -202,6 +202,7 @@ impl<'a> WidgetContainer<'a> {
 
         self.current_node = *entity;
 
+        crate::shell::CONSOLE.time("state update");
         if self.has::<crate::theme::Selector>("_selector") {
             if let Some(focus) = self.try_clone::<bool>("focused") {
                 update_state("focused", focus, self);
@@ -226,10 +227,14 @@ impl<'a> WidgetContainer<'a> {
             if let Some(expanded) = self.try_clone::<bool>("expanded") {
                 update_state("expanded", !expanded, self);
             }
+            crate::shell::CONSOLE.time_end("state update");
 
+            crate::shell::CONSOLE.time("reload properties");
             if self.get::<crate::theme::Selector>("_selector").dirty || force {
                 self.update_properties_by_theme();
             }
+            crate::shell::CONSOLE.time_end("reload properties");
+          
         }
     }
 

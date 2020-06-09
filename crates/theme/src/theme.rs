@@ -16,7 +16,6 @@ pub struct Selector {
     pub state: Option<String>,
 
     pub dirty: bool,
-    
 }
 
 impl Selector {
@@ -24,7 +23,7 @@ impl Selector {
         Selector {
             style: Some(style.into()),
             state: None,
-            dirty: true
+            dirty: true,
         }
     }
 
@@ -44,7 +43,7 @@ pub struct Theme {
 
 impl<'a> Theme {
     /// Extends the given theme with a other theme. Replaces the current name with name of other.
-    /// If a style with the same key is on other, it will replace the style in the current theme. 
+    /// If a style with the same key is on other, it will replace the style in the current theme.
     pub fn extend(mut self, other: Theme) -> Self {
         let mut other = other;
 
@@ -86,7 +85,7 @@ impl<'a> Theme {
             if let Some(properties) = style.states.get(state) {
                 return self.get_property_value(property, properties);
             }
- 
+
             // load state properties from based style if there are no other states (recursive through base style).
             if style.base.is_empty() {
                 return None;
@@ -122,7 +121,6 @@ impl<'a> Theme {
         property: &str,
         properties: &'a HashMap<String, Value>,
     ) -> Option<Value> {
-
         let property = properties.get(property)?;
 
         // load from resources if the value is a key.
@@ -133,6 +131,13 @@ impl<'a> Theme {
         }
 
         Some(property.clone())
+    }
+
+    pub fn properties(&'a self, selector: &'a Selector) -> PropertyIterator {
+        PropertyIterator {
+            theme: self,
+            selector,
+        }
     }
 }
 
@@ -153,4 +158,122 @@ pub struct Style {
     states: HashMap<String, HashMap<String, Value>>,
     #[serde(default)]
     properties: HashMap<String, Value>,
+}
+
+pub struct PropertyIterator<'a> {
+    theme: &'a Theme,
+    selector: &'a Selector,
+}
+
+impl<'a> Iterator for PropertyIterator<'a> {
+    type Item = (String, Value);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        todo!()
+    }
+}
+
+pub struct ThemeX {
+    styles: HashMap<String, StyleX>,
+}
+
+impl ThemeX {
+    pub fn from_config(theme: Theme) -> Self {
+        let mut styles = HashMap::new();
+
+        for style_key in theme.styles.keys() {
+            let mut properties = HashMap::new();
+            ThemeX::read_properties(style_key, &theme, &mut properties);
+
+            let mut states = HashMap::new();
+
+            for state_key in theme.styles.get(style_key).unwrap().states.keys() {
+                let mut state = HashMap::new();
+                ThemeX::read_states(style_key,state_key, &theme, &mut state);
+                states.insert(state_key.clone(), state);
+            }     
+
+            styles.insert(style_key.clone(), StyleX { properties, states});
+        }
+
+        ThemeX { styles }
+    }
+
+    pub fn style(&self, key: &str) -> Option<&StyleX> {
+        self.styles.get(key)
+    }
+
+    pub fn properties<'a>(&'a self, selector: &Selector) -> Option<&'a HashMap<String, Value>> {
+        if !selector.dirty {
+            return None;
+        }
+
+        if let Some(style) = &selector.style {
+            if let Some(state) = &selector.state {
+                return self.styles.get(style)?.states.get(state)
+            }
+
+            return Some(&self.styles.get(style)?.properties);
+        }
+
+        return None
+    }
+
+    fn read_properties(key: &String, theme: &Theme, properties: &mut HashMap<String, Value>) {
+        if key.is_empty() {
+            return;
+        }
+
+        if let Some(style) = theme.styles.get(key) {
+            ThemeX::read_properties(&style.base, theme, properties);
+
+            for (key, value) in &style.properties {
+                ThemeX::read_property(key, value, theme, properties);
+            }
+        }
+    }
+
+    fn read_states(
+        style_key: &String,
+        state_key: &String,
+        theme: &Theme,
+        states: &mut HashMap<String, Value>,
+    ) {
+        if style_key.is_empty() || state_key.is_empty() {
+            return;
+        }
+
+        if let Some(style) = theme.styles.get(style_key) {
+            ThemeX::read_states(&style.base,  state_key, theme, states);
+
+            for (key, value) in &style.properties {
+                ThemeX::read_property(key, value, theme, states);
+            }
+
+            if let Some(state) = style.states.get(state_key) {
+                for (key, value) in state {
+                    ThemeX::read_property(key, value, theme, states);
+                }
+            }
+        }
+    }
+
+    fn read_property(key: &String, value: &Value, theme: &Theme, map: &mut HashMap<String, Value>) {
+        if let Ok(value) = value.clone().into_rust::<String>() {
+            if value.starts_with(RESOURCE_KEY) {
+                if let Some(value) = theme.resources.get(&value.replace(RESOURCE_KEY, "")) {
+                    map.insert(key.clone(), value.clone());
+                }
+            } else {
+                map.insert(key.clone(), Value::String(value));
+            }
+        } else {
+            map.insert(key.clone(), value.clone());
+        }
+    }
+}
+
+pub struct StyleX {
+    properties: HashMap<String, Value>,
+    states: HashMap<String, HashMap<String, Value>>,
 }

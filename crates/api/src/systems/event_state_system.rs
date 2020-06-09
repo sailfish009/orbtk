@@ -375,8 +375,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                 .unwrap()
                 .clone();
 
-            crate::shell::CONSOLE.time("state");
-
             let mut current_node = root;
             let mut remove_widget_list: Vec<Entity> = vec![];
             loop {
@@ -461,8 +459,6 @@ impl System<Tree, StringComponentStore, RenderContext2D> for EventStateSystem {
                     break;
                 }
             }
-
-            crate::shell::CONSOLE.time_end("state");
 
             if self.context_provider.event_queue.borrow().is_empty() {
                 break;
