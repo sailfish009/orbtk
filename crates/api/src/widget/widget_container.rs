@@ -201,46 +201,53 @@ impl<'a> WidgetContainer<'a> {
         }
 
         self.current_node = *entity;
+        
 
-        crate::shell::CONSOLE.time("state update");
-        if self.has::<crate::theme::Selector>("_selector") {
-            if let Some(focus) = self.try_clone::<bool>("focused") {
-                update_state("focused", focus, self);
+        // crate::shell::CONSOLE.time("state update");
+        if let Some(mut selector) = self.try_clone::<crate::theme::Selector>("_selector") {
+            if let Some(focus) = self.try_get::<bool>("focused") {
+                update_state("focused", *focus, &mut selector);
             }
 
-            if let Some(selected) = self.try_clone::<bool>("selected") {
-                update_state("selected", selected, self);
+            if let Some(selected) = self.try_get::<bool>("selected") {
+                update_state("selected", *selected, &mut selector);
             }
 
-            if let Some(pressed) = self.try_clone::<bool>("pressed") {
-                update_state("pressed", pressed, self);
+            if let Some(pressed) = self.try_get::<bool>("pressed") {
+                if *pressed {
+                    crate::shell::CONSOLE.count_start("updates");
+                }
+                update_state("pressed", *pressed, &mut selector);
             }
 
-            if let Some(enabled) = self.try_clone::<bool>("enabled") {
-                update_state("disabled", !enabled, self);
+            if let Some(enabled) = self.try_get::<bool>("enabled") {
+                update_state("disabled", !enabled, &mut selector);
             }
 
-            if let Some(text) = self.try_clone::<String16>("text") {
-                update_state("empty", text.is_empty(), self);
+            if let Some(text) = self.try_get::<String16>("text") {
+                update_state("empty", text.is_empty(), &mut selector);
             }
 
-            if let Some(expanded) = self.try_clone::<bool>("expanded") {
-                update_state("expanded", !expanded, self);
+            if let Some(expanded) = self.try_get::<bool>("expanded") {
+                update_state("expanded", !expanded, &mut selector);
             }
-            crate::shell::CONSOLE.time_end("state update");
+            // crate::shell::CONSOLE.time_end("state update");
 
-            crate::shell::CONSOLE.time("reload properties");
+            // crate::shell::CONSOLE.time("reload properties");
+
+            self.set("_selector", selector);
             if self.get::<crate::theme::Selector>("_selector").dirty || force {
                 self.update_properties_by_theme();
             }
-            crate::shell::CONSOLE.time_end("reload properties");
-          
+            // crate::shell::CONSOLE.time_end("reload properties");
         }
     }
 
     /// Updates the theme by the inner state e.g. `selected` or `pressed`.
     pub fn update_theme_by_state(&mut self, force: bool) {
+      
         self.update_internal_theme_by_state(force, &(self.current_node.clone()));
+        crate::shell::CONSOLE.count_end("updates");
     }
 
     /// Update all properties for the theme.
@@ -249,35 +256,40 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
+        crate::shell::CONSOLE.count("updates");
+
         let selector = self.clone::<crate::theme::Selector>("_selector");
 
         if !selector.dirty {
             return;
         }
 
-        self.update_brush_by_theme("foreground", &selector);
-        self.update_brush_by_theme("background", &selector);
-        self.update_brush_by_theme("border_brush", &selector);
-
-        self.update_f64_theme("border_radius", &selector);
-
-        if self.has::<f32>("opacity") {
-            if let Some(opacity) = self._theme.property("opacity", &selector) {
-                if let Ok(opacity) = opacity.into_rust::<f32>() {
-                    self.set("opacity", opacity);
+        if let Some(properties) = self._theme.properties(&selector) {
+            for (key, value) in properties {
+                match key.as_str() {
+                    "foreground" | "background" | "border_brush" | "icon_brush" => self.update_brush(key, value),
+                    "border_radius" | "font_size" | "icon_size" | "spacing" => self.update_f64(key, value),
+                    "font" | "icon_font" => self.update_string(key, value),
+                    "opacity" => self.update_f32(key, value),
+                    "padding" | "border_width" => self.update_thickness_from_f64(key, value),
+                    "padding_left" => self.update_thickness_part(key, "left", value),
+                    "padding_top" => self.update_thickness_part(key, "top", value),
+                    "padding_right" => self.update_thickness_part(key, "right", value),
+                    "padding_bottom" => self.update_thickness_part(key, "bottom", value),
+                    _ => {}
                 }
             }
         }
 
-        if self.has::<Thickness>("border_width") {
-            if let Some(border_width) = self._theme.property("border_width", &selector) {
-                if let Ok(border_width) = border_width.into_rust::<f64>() {
-                    self.set("border_width", Thickness::from(border_width));
-                }
-            }
-        }
+        // if self.has::<Thickness>("border_width") {
+        //     if let Some(border_width) = self._theme.property("border_width", &selector) {
+        //         if let Ok(border_width) = border_width.into_rust::<f64>() {
+        //             self.set("border_width", Thickness::from(border_width));
+        //         }
+        //     }
+        // }
 
-        self.update_font_properties_by_theme(&selector);
+      
 
         // if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
         //     if let Some(pad) = self.theme.uint("padding", &selector) {
@@ -330,54 +342,59 @@ impl<'a> WidgetContainer<'a> {
         //     self.set::<Constraint>("constraint", constraint);
         // }
 
-        // if self.has::<f64>("spacing") {
-        //     if let Some(spacing) = self.theme.uint("spacing", &selector) {
-        //         self.set::<f64>("spacing", spacing.into());
-        //     }
-        // }
 
         self.get_mut::<crate::theme::Selector>("_selector").dirty = false;
     }
 
-    fn update_brush_by_theme(&mut self, property: &str, selector: &crate::theme::Selector) {
-        if self.has::<Brush>(property) {
-            if let Some(brush) = self._theme.property(property, &selector) {
-                if let Ok(brush) = brush.into_rust::<String>() {
-                    self.set(property, Brush::from(brush));
-                }
+    fn update_brush(&mut self, key: &str, value: &Value) {
+        if self.has::<Brush>(key) {
+            if let Ok(brush) = value.clone().into_rust::<String>() {
+                self.set(key, Brush::from(brush));
             }
         }
     }
 
-    fn update_f64_theme(&mut self, property_key: &str, selector: &crate::theme::Selector) {
-        if self.has::<f64>(property_key) {
-            if let Some(property) = self._theme.property(property_key, &selector) {
-                if let Ok(property) = property.into_rust::<f64>() {
-                    self.set(property_key, property);
-                }
+    fn update_string(&mut self, key: &str, value: &Value) {
+        if self.has::<String>(key) {
+            if let Ok(number) = value.clone().into_rust::<String>() {
+                self.set(key, number);
             }
         }
     }
 
-    pub fn update_font_properties_by_theme(&mut self, selector: &crate::theme::Selector) {  
-        self.update_f64_theme("font_size", selector);
-
-        if self.has::<String>("font_family") {
-            if let Some(family) = self._theme.property("font_family", selector) {
-                if let Ok(family) = family.into_rust::<String>() {
-                    self.set("font_family", family);
-                }
+    fn update_f32(&mut self, key: &str, value: &Value) {
+        if self.has::<f32>(key) {
+            if let Ok(number) = value.clone().into_rust::<f32>() {
+                self.set(key, number);
             }
         }
-     
-        self.update_brush_by_theme("icon_brush", selector);
+    }
 
-        self.update_f64_theme("icon_size", selector);
+    fn update_f64(&mut self, key: &str, value: &Value) {
+        if self.has::<f64>(key) {
+            if let Ok(number) = value.clone().into_rust::<f64>() {
+                self.set(key, number);
+            }
+        }
+    }
 
-        if self.has::<String>("icon_family") {
-            if let Some(family) = self._theme.property("icon_family", selector) {
-                if let Ok(family) = family.into_rust::<String>() {
-                    self.set("icon_family", family);
+    fn update_thickness_from_f64(&mut self, key: &str, value: &Value) {
+        if self.has::<Thickness>(key) {
+            if let Ok(number) = value.clone().into_rust::<f64>() {
+                self.set(key, Thickness::from(number));
+            }
+        }
+    }
+
+    fn update_thickness_part(&mut self, key: &str, direction: &str, value: &Value) {
+        if self.has::<Thickness>(key) {
+            if let Ok(number) = value.clone().into_rust::<f64>() {
+                match direction {
+                    "left" => self.get_mut::<Thickness>(key).set_left(number),
+                    "top" =>  self.get_mut::<Thickness>(key).set_top(number),
+                    "right" =>  self.get_mut::<Thickness>(key).set_right(number),
+                    "bottom" =>  self.get_mut::<Thickness>(key).set_bottom(number),
+                    _ => {}
                 }
             }
         }

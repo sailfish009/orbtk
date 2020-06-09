@@ -460,8 +460,6 @@ fn main() {
 
     let theme = orbtk::theme::default_theme_r();
 
-    println!("{:?}", theme);
-
     Application::new()
         .window(|ctx| {
             Window::create()

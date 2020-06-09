@@ -44,12 +44,14 @@ pub fn light_theme() -> Theme {
 }
 
 pub fn default_theme_r() -> theme::Theme {
-    theme::Theme::from(DEFAULT_THEME_RON)
-        .extend(theme::Theme::from(DEFAULT_COLORS_RON))
-        .extend(theme::Theme::from(DEFAULT_FONTS_RON))
+    theme::Theme::from_config(
+        theme::ThemeConfig::from(DEFAULT_THEME_RON)
+            .extend(theme::ThemeConfig::from(DEFAULT_COLORS_RON))
+            .extend(theme::ThemeConfig::from(DEFAULT_FONTS_RON))
+    )
 }
 
-lazy_static! {
-    pub static ref DEFAULT_THEME_R: Arc<theme::Theme> =
-        Arc::new(theme::Theme::from(DEFAULT_THEME_RON));
-}
+// lazy_static! {
+//     pub static ref DEFAULT_THEME_R: Arc<theme::Theme> =
+//         Arc::new(theme::Theme::from(DEFAULT_THEME_RON));
+// }

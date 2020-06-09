@@ -6,7 +6,7 @@ use serde_derive::{Deserialize, Serialize};
 static BASE_STYLE: &str = "base";
 static RESOURCE_KEY: &str = "$";
 
-/// The selector is used to read a property value from the `Theme`.
+/// The selector is used to read a property value from the `ThemeConfig`.
 #[derive(Debug, Clone, Default)]
 pub struct Selector {
     /// Represents the key of a style.
@@ -34,17 +34,18 @@ impl Selector {
 
 /// Used to store and read properties that could be requested by a given property name and a selector.
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
-pub struct Theme {
+#[serde(rename = "Theme")]
+pub struct ThemeConfig {
     #[serde(default)]
-    styles: HashMap<String, Style>,
+    styles: HashMap<String, StyleConfig>,
     #[serde(default)]
     resources: HashMap<String, Value>,
 }
 
-impl<'a> Theme {
+impl<'a> ThemeConfig {
     /// Extends the given theme with a other theme. Replaces the current name with name of other.
     /// If a style with the same key is on other, it will replace the style in the current theme.
-    pub fn extend(mut self, other: Theme) -> Self {
+    pub fn extend(mut self, other: ThemeConfig) -> Self {
         let mut other = other;
 
         for style in other.styles.drain() {
@@ -77,7 +78,7 @@ impl<'a> Theme {
     fn get_property(
         &'a self,
         property: &str,
-        style: &'a Style,
+        style: &'a StyleConfig,
         selector: &Selector,
     ) -> Option<Value> {
         // state properties has the most priority
@@ -132,16 +133,9 @@ impl<'a> Theme {
 
         Some(property.clone())
     }
-
-    pub fn properties(&'a self, selector: &'a Selector) -> PropertyIterator {
-        PropertyIterator {
-            theme: self,
-            selector,
-        }
-    }
 }
 
-impl From<&str> for Theme {
+impl From<&str> for ThemeConfig {
     fn from(s: &str) -> Self {
         from_str(s).unwrap()
     }
@@ -150,7 +144,7 @@ impl From<&str> for Theme {
 /// Defines a style. A style could be base on other styles and contains a list for properties
 /// and a list of state properties.
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
-pub struct Style {
+pub struct StyleConfig {
     // set default string to base style
     #[serde(default)]
     base: String,
@@ -160,46 +154,34 @@ pub struct Style {
     properties: HashMap<String, Value>,
 }
 
-pub struct PropertyIterator<'a> {
-    theme: &'a Theme,
-    selector: &'a Selector,
+#[derive(Debug, Clone, Default)]
+pub struct Theme {
+    styles: HashMap<String, Style>,
 }
 
-impl<'a> Iterator for PropertyIterator<'a> {
-    type Item = (String, Value);
-
-    fn next(&mut self) -> Option<Self::Item> {
-        todo!()
-    }
-}
-
-pub struct ThemeX {
-    styles: HashMap<String, StyleX>,
-}
-
-impl ThemeX {
-    pub fn from_config(theme: Theme) -> Self {
+impl Theme {
+    pub fn from_config(theme: ThemeConfig) -> Self {
         let mut styles = HashMap::new();
 
         for style_key in theme.styles.keys() {
             let mut properties = HashMap::new();
-            ThemeX::read_properties(style_key, &theme, &mut properties);
+            Theme::read_properties(style_key, &theme, &mut properties);
 
             let mut states = HashMap::new();
 
             for state_key in theme.styles.get(style_key).unwrap().states.keys() {
                 let mut state = HashMap::new();
-                ThemeX::read_states(style_key,state_key, &theme, &mut state);
+                Theme::read_states(style_key,state_key, &theme, &mut state);
                 states.insert(state_key.clone(), state);
             }     
 
-            styles.insert(style_key.clone(), StyleX { properties, states});
+            styles.insert(style_key.clone(), Style { properties, states});
         }
 
-        ThemeX { styles }
+        Theme { styles }
     }
 
-    pub fn style(&self, key: &str) -> Option<&StyleX> {
+    pub fn style(&self, key: &str) -> Option<&Style> {
         self.styles.get(key)
     }
 
@@ -219,16 +201,16 @@ impl ThemeX {
         return None
     }
 
-    fn read_properties(key: &String, theme: &Theme, properties: &mut HashMap<String, Value>) {
+    fn read_properties(key: &String, theme: &ThemeConfig, properties: &mut HashMap<String, Value>) {
         if key.is_empty() {
             return;
         }
 
         if let Some(style) = theme.styles.get(key) {
-            ThemeX::read_properties(&style.base, theme, properties);
+            Theme::read_properties(&style.base, theme, properties);
 
             for (key, value) in &style.properties {
-                ThemeX::read_property(key, value, theme, properties);
+                Theme::read_property(key, value, theme, properties);
             }
         }
     }
@@ -236,7 +218,7 @@ impl ThemeX {
     fn read_states(
         style_key: &String,
         state_key: &String,
-        theme: &Theme,
+        theme: &ThemeConfig,
         states: &mut HashMap<String, Value>,
     ) {
         if style_key.is_empty() || state_key.is_empty() {
@@ -244,21 +226,21 @@ impl ThemeX {
         }
 
         if let Some(style) = theme.styles.get(style_key) {
-            ThemeX::read_states(&style.base,  state_key, theme, states);
+            Theme::read_states(&style.base,  state_key, theme, states);
 
             for (key, value) in &style.properties {
-                ThemeX::read_property(key, value, theme, states);
+                Theme::read_property(key, value, theme, states);
             }
 
             if let Some(state) = style.states.get(state_key) {
                 for (key, value) in state {
-                    ThemeX::read_property(key, value, theme, states);
+                    Theme::read_property(key, value, theme, states);
                 }
             }
         }
     }
 
-    fn read_property(key: &String, value: &Value, theme: &Theme, map: &mut HashMap<String, Value>) {
+    fn read_property(key: &String, value: &Value, theme: &ThemeConfig, map: &mut HashMap<String, Value>) {
         if let Ok(value) = value.clone().into_rust::<String>() {
             if value.starts_with(RESOURCE_KEY) {
                 if let Some(value) = theme.resources.get(&value.replace(RESOURCE_KEY, "")) {
@@ -273,7 +255,8 @@ impl ThemeX {
     }
 }
 
-pub struct StyleX {
+#[derive(Debug, Clone, Default)]
+pub struct Style {
     properties: HashMap<String, Value>,
     states: HashMap<String, HashMap<String, Value>>,
 }
