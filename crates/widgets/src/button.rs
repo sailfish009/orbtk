@@ -50,7 +50,7 @@ widget!(
 
         /// Sets or shares the spacing between icon and text.
         spacing: f64
-    }
+    } 
 );
 
 impl Template for Button {

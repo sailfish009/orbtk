@@ -22,7 +22,7 @@ impl Console {
 
     pub fn time_end(&self, name: impl Into<String>) {
         if let Some((_k, _v)) = self.instants.lock().unwrap().remove_entry(&name.into()) {
-            println!("{} {}micros - timer ended", _k, _v.elapsed().as_micros());
+            println!("{} {}micros - timer ended", _k, _v.elapsed().as_millis());
         }
     }
 

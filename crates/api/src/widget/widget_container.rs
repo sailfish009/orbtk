@@ -250,60 +250,29 @@ impl<'a> WidgetContainer<'a> {
             return;
         }
 
-        if self.has::<Brush>("foreground") {
-            if let Some(brush) = self._theme.property("foreground", &selector) {
-                if let Ok(brush) = brush.into_rust::<String>() {
-                    println!("sel: {:?}, {}", selector.style, brush);
-                    self.set("foreground", Brush::from(brush));
+        self.update_brush_by_theme("foreground", &selector);
+        self.update_brush_by_theme("background", &selector);
+        self.update_brush_by_theme("border_brush", &selector);
+
+        self.update_f64_theme("border_radius", &selector);
+
+        if self.has::<f32>("opacity") {
+            if let Some(opacity) = self._theme.property("opacity", &selector) {
+                if let Ok(opacity) = opacity.into_rust::<f32>() {
+                    self.set("opacity", opacity);
                 }
             }
         }
 
-        if self.has::<Brush>("background") {
-            if let Some(brush) = self._theme.property("background", &selector) {
-                if let Ok(brush) = brush.into_rust::<String>() {
-                    if let Some(state) = &selector.state {
-                        if state.eq("pressed") {
-                            println!("sel: {:?}, {}", selector.style, brush);
-                        }
-                    }
-
-                    self.set("background", Brush::from(brush));
+        if self.has::<Thickness>("border_width") {
+            if let Some(border_width) = self._theme.property("border_width", &selector) {
+                if let Ok(border_width) = border_width.into_rust::<f64>() {
+                    self.set("border_width", Thickness::from(border_width));
                 }
             }
         }
 
-        // if self.has::<Brush>("background") {
-        //     if let Some(background) = self.theme.brush("background", &selector) {
-        //         self.set::<Brush>("background", background);
-        //     }
-        // }
-
-        // if self.has::<Brush>("border_brush") {
-        //     if let Some(border_brush) = self.theme.brush("border-color", &selector) {
-        //         self.set::<Brush>("border_brush", border_brush);
-        //     }
-        // }
-
-        // if self.has::<f64>("border_radius") {
-        //     if let Some(radius) = self.theme.uint("border-radius", &selector) {
-        //         self.set::<f64>("border_radius", f64::from(radius));
-        //     }
-        // }
-
-        // if self.has::<f32>("opacity") {
-        //     if let Some(opacity) = self.theme.float("opacity", &selector) {
-        //         self.set::<f32>("opacity", opacity);
-        //     }
-        // }
-
-        // if self.has::<Thickness>("border_width") {
-        //     if let Some(border_width) = self.theme.uint("border-width", &selector) {
-        //         self.set::<Thickness>("border_width", Thickness::from(border_width as f64));
-        //     }
-        // }
-
-        // self.update_font_properties_by_theme(&selector);
+        self.update_font_properties_by_theme(&selector);
 
         // if let Some(mut padding) = self.try_clone::<Thickness>("padding") {
         //     if let Some(pad) = self.theme.uint("padding", &selector) {
@@ -365,34 +334,46 @@ impl<'a> WidgetContainer<'a> {
         self.get_mut::<crate::theme::Selector>("_selector").dirty = false;
     }
 
-    pub fn update_font_properties_by_theme(&mut self, selector: &Selector) {
-        if self.has::<f64>("font_size") {
-            if let Some(size) = self.theme.uint("font-size", selector) {
-                self.set::<f64>("font_size", f64::from(size));
+    fn update_brush_by_theme(&mut self, property: &str, selector: &crate::theme::Selector) {
+        if self.has::<Brush>(property) {
+            if let Some(brush) = self._theme.property(property, &selector) {
+                if let Ok(brush) = brush.into_rust::<String>() {
+                    self.set(property, Brush::from(brush));
+                }
             }
         }
+    }
+
+    fn update_f64_theme(&mut self, property_key: &str, selector: &crate::theme::Selector) {
+        if self.has::<f64>(property_key) {
+            if let Some(property) = self._theme.property(property_key, &selector) {
+                if let Ok(property) = property.into_rust::<f64>() {
+                    self.set(property_key, property);
+                }
+            }
+        }
+    }
+
+    pub fn update_font_properties_by_theme(&mut self, selector: &crate::theme::Selector) {  
+        self.update_f64_theme("font_size", selector);
 
         if self.has::<String>("font_family") {
-            if let Some(font_family) = self.theme.string("font-family", selector) {
-                self.set::<String>("font_family", font_family);
+            if let Some(family) = self._theme.property("font_family", selector) {
+                if let Ok(family) = family.into_rust::<String>() {
+                    self.set("font_family", family);
+                }
             }
         }
+     
+        self.update_brush_by_theme("icon_brush", selector);
 
-        if self.has::<Brush>("icon_brush") {
-            if let Some(color) = self.theme.brush("icon-color", selector) {
-                self.set::<Brush>("icon_brush", color);
-            }
-        }
-
-        if self.has::<f64>("icon_size") {
-            if let Some(size) = self.theme.uint("icon-size", selector) {
-                self.set::<f64>("icon_size", f64::from(size));
-            }
-        }
+        self.update_f64_theme("icon_size", selector);
 
         if self.has::<String>("icon_family") {
-            if let Some(font_family) = self.theme.string("icon-family", selector) {
-                self.set::<String>("icon_family", font_family);
+            if let Some(family) = self._theme.property("icon_family", selector) {
+                if let Ok(family) = family.into_rust::<String>() {
+                    self.set("icon_family", family);
+                }
             }
         }
     }
