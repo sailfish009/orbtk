@@ -1,9 +1,8 @@
 Theme (
-    name: "orbtk-dark",
     styles: {
         "base": (
             properties: {
-                "background": "#3b434a",
+                "background": "$BRIGHT_GRAY",
                 "font_size": 16,
                 "font_family": "Roboto Medium",
                 "icon_size": 16,
@@ -12,37 +11,37 @@ Theme (
         ),
         "window": (
              properties: {
-                  "background": "#3b434a",
+                  "background": "$BRIGHT_GRAY",
              }
         ),
         "button": ( 
             base: "base",
             properties: {
                 "height": 36,
-                "foreground": "#dfebf5",
-                "background": "#647b91",
+                "foreground": "$LINK_WATER",
+                "background": "$LYNCH",
                 "border_radius": 4,
                 "font_family": "Roboto Medium",
             }, 
             states: {
                 "pressed": {
-                    "background": "#516475",
-                    "foreground": "#000000",
-                    "icon_brush": "#dfebf5",
+                    "background": "$BLUE_BYOUX",
+                    "foreground": "&BLACK",
+                    "icon_brush": "$LINK_WATER",
                 },
                 "disabled": {
-                    "background": "#7a7e81",
-                    "foreground": "#3b434a",
-                    "icon_brush": "#3b434a",
+                    "background": "$ROLLING_STONE",
+                    "foreground": "$BRIGHT_GRAY",
+                    "icon_brush": "$BRIGHT_GRAY",
                 },
             },
         ),
         "button_primary": (
             base: "button",
             properties: {
-                "background": "#efd035",
-                "foreground": "#3b434a",
-                "icon_brush": "#3b434a",
+                "background": "$GOLDEN_DREAM",
+                "foreground": "$BRIGHT_GRAY",
+                "icon_brush": "$BRIGHT_GRAY",
             },
         ),
          "button_square": ( 
@@ -63,14 +62,14 @@ Theme (
                 "background": "transparent",
                 "border_radius": 2,
                 "border_width": 1,
-                "border_brush": "#adb3b8",
+                "border_brush": "$BOMBAY",
                 "icon_brush": "transparent",
             },
             states: {
                 "selected": {
-                    "background": "#efd035",
-                    "border_brush": "#efd035",
-                    "icon_brush": "#3b434a",
+                    "background": "$GOLDEN_DREAM",
+                    "border_brush": "$GOLDEN_DREAM",
+                    "icon_brush": "$BRIGHT_GRAY",
                 },
             },
         ),
@@ -101,7 +100,7 @@ Theme (
             },
             states: {
                 "selected": {
-                    "background": "#F8DE4C",
+                    "background": "$ENERGY_YELLOW",
                 },
             },
         ),
@@ -112,31 +111,31 @@ Theme (
         ),
         "combo_box": (
             properties: {
-                "foreground": "#dfebf5",
-                "background": "#3b434a",
-                "border_brush": "#647b91",
+                "foreground": "$LINK_WATER",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
             },
             states: {
                 "selected": {
-                    "border_brush": "#f8de4c",
+                    "border_brush": "$ENERGY_YELLOW",
                 },
             },
         ),
         "combo_box_item": (
             properties: {
                 "font_size": 12,
-                "foreground": "#ccdeed",
+                "foreground": "$PERIWINDLE_GRAY",
                 "background": "transparent",
                 "padding_left": 8,
                 "padding_right": 8,
             },
             states: {
                 "selected": {
-                    "foreground": "#3b434a",
-                    "background": "#e1bc21",
+                    "foreground": "$BRIGHT_GRAY",
+                    "background": "$SUNFLOWER",
                 },
             },
         ),
@@ -148,13 +147,13 @@ Theme (
         "text_box": (
             properties: {
                 "height": 32,
-                "foreground": "#ccdeed",
-                "background": "#3b434a",
-                "border_brush": "#647b91",
+                "foreground": "$PERIWINDLE_GRAY",
+                "background": "$BRIGHT_GRAY",
+                "border_brush": "$LYNCH",
                 "border_width": 1,
                 "border_radius": 3,
                 "padding": 6,
             },
         ),
-    }
+    },
 )

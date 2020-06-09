@@ -19,7 +19,9 @@ pub mod vector_graphics;
 
 pub mod theme;
 
-pub const DEFAULT_THEME_RON: &str = include_str!("dark.ron");
+pub const DEFAULT_THEME_RON: &str = include_str!("dark/dark.ron");
+pub const DEFAULT_COLORS_RON: &str = include_str!("dark/colors.ron");
+pub const DEFAULT_FONTS_RON: &str = include_str!("dark/fonts.ron");
 pub const DEFAULT_THEME_CSS: &str = include_str!("dark.css");
 pub const LIGHT_THEME_EXTENSION_CSS: &str = include_str!("light.css");
 
@@ -43,6 +45,8 @@ pub fn light_theme() -> Theme {
 
 pub fn default_theme_r() -> theme::Theme {
     theme::Theme::from(DEFAULT_THEME_RON)
+        .extend(theme::Theme::from(DEFAULT_COLORS_RON))
+        .extend(theme::Theme::from(DEFAULT_FONTS_RON))
 }
 
 lazy_static! {
