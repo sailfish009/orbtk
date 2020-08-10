@@ -1,17 +1,13 @@
 use super::MouseBehavior;
 
-use crate::{
-    prelude::*,
-    shell::{Key, KeyEvent}
-};
-
+use crate::{api::prelude::*, proc_macros::*, shell::prelude::*, theme::fonts};
 #[derive(Clone)]
 enum TextAction {
     Key(KeyEvent),
     Mouse(Mouse),
 }
 
-/// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget. 
+/// The `TextBehaviorState` handles the text processing of the `TextBehavior` widget.
 #[derive(Default, AsAny)]
 pub struct TextBehaviorState {
     action: Option<TextAction>,
@@ -51,8 +47,8 @@ impl TextBehaviorState {
         }
     }
 
-     // Get new position for the caret based on current mouse position
-     fn get_new_caret_position(&self, ctx: &mut Context, p: Mouse) -> usize {
+    // Get new position for the caret based on current mouse position
+    fn get_new_caret_position(&self, ctx: &mut Context, p: Mouse) -> usize {
         if let Some((index, _x)) = self
             .map_chars_index_to_position(ctx)
             .iter()
@@ -65,11 +61,12 @@ impl TextBehaviorState {
     }
 
     // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
+    // Returns a vector with a tuple of each char's starting index (usize) and position (f64)
     fn map_chars_index_to_position(&self, ctx: &mut Context) -> Vec<(usize, f64)> {
-        let text: String = ctx.widget().get::<String16>("text").as_string();
+        let text: String16 = ctx.widget().clone("text");
         // start x position of the cursor is start position of the text element + padding left
-        let start_position: f64 = ctx.get_widget(self.parent).get::<Point>("position").x()
-            + ctx.get_widget(self.parent).get::<Thickness>("padding").left;
+        let start_position: f64 = ctx.widget().get::<Point>("position").x()
+            + ctx.widget().get::<Thickness>("padding").left;
         // array which will hold char index and it's x position
         let mut position_index: Vec<(usize, f64)> = Vec::with_capacity(text.len());
         position_index.push((0, start_position));
@@ -77,15 +74,21 @@ impl TextBehaviorState {
         let font: String = ctx.widget().clone_or_default::<String>("font");
         let font_size: f64 = ctx.widget().clone_or_default::<f64>("font_size");
 
-        for (index, _) in text.chars().enumerate() {
+        for i in 0..text.len() {
             let bound_width: f64 = ctx
                 .render_context_2_d()
-                .measure(&text[..index + 1], font_size, &font)
+                .measure(
+                    &text.get_string(0, i + 1).unwrap().as_str(),
+                    font_size,
+                    &font,
+                )
                 .width;
             let next_position: f64 = start_position + bound_width;
 
-            position_index.push((index + 1, next_position));
+            position_index.push((i + 1, next_position));
         }
+
+        // for (index, _) in text.chars().u.enumerate() {}
 
         position_index
     }
@@ -322,12 +325,16 @@ impl TextBehaviorState {
 
 impl State for TextBehaviorState {
     fn init(&mut self, _: &mut Registry, ctx: &mut Context) {
-        self.cursor = Entity::from(ctx
-            .widget().try_clone::<u32>("cursor")
-            .expect("TextBehaviorState.init: cursor could not be found."));
-        self.parent = Entity::from(ctx
-            .widget().try_clone::<u32>("parent")
-            .expect("TextBehaviorState.init: parent could not be found."));
+        self.cursor = Entity::from(
+            ctx.widget()
+                .try_clone::<u32>("cursor")
+                .expect("TextBehaviorState.init: cursor could not be found."),
+        );
+        self.parent = Entity::from(
+            ctx.widget()
+                .try_clone::<u32>("parent")
+                .expect("TextBehaviorState.init: parent could not be found."),
+        );
         self.len = ctx.widget().get::<String16>("text").len();
         self.focused = *ctx.widget().get::<bool>("focused");
 
@@ -395,7 +402,7 @@ impl State for TextBehaviorState {
 widget!(
     /// The TextBehavior widget shares the same logic of handling text input between
     /// tex-related widgets.
-    /// 
+    ///
     /// Attaching to a widget makes it able to handle text input like:
     /// * input characters by keyboard
     /// * select all text with Ctrl+A key combination
@@ -403,11 +410,11 @@ widget!(
     /// * move cursor by the left or right arrow keys or clicking with mouse
     /// * delete characters by pressing the Backspace or the Delete key
     /// * run on_activate() callback on pressing the Enter key
-    /// 
+    ///
     /// TextBehavior needs the following prerequisites to able to work:
     /// * a `cursor`: the [`Entity`] of a [`Cursor`] widget
     /// * a parent: the [`Entity`] of the parent widget
-    /// 
+    ///
     /// * and must inherit the following properties from its parent:
     ///     * focused
     ///     * font
@@ -416,12 +423,12 @@ widget!(
     ///     * request_focus
     ///     * text
     ///     * text_selection
-    /// 
+    ///
     /// # Example
-    /// 
+    ///
     /// ```
     /// use orbtk::prelude::*
-    /// 
+    ///
     /// widget!(MyInput {
     ///     // essential properties TextBehavior needs to inherit
     ///     focused: bool,
@@ -431,7 +438,7 @@ widget!(
     ///     request_focus: bool,
     ///     text_selection: TextSelection
     /// });
-    /// 
+    ///
     /// impl Template for MyInput {
     ///     fn template(self, id: Entity, ctx: &mut BuildContext) -> Self {
     ///         // Cursor depends on a TextBlock
@@ -441,14 +448,14 @@ widget!(
     ///             .font(id)
     ///             .font_size(id)
     ///             .build(ctx);
-    /// 
+    ///
     ///         let cursor = Cursor::new()
     ///            // use .0 because Entity wraps an u32
     ///            .text_block(text_block.0)
     ///            .focused(id)
     ///            .text_selection(id)
     ///            .build(ctx);
-    /// 
+    ///
     ///        let text_behavior = TextBehavior::new()
     ///            .cursor(cursor.0)
     ///            .focused(id)
@@ -465,7 +472,7 @@ widget!(
     ///            .child(text_behavior)
     /// }
     /// ```
-    /// 
+    ///
     /// [`Entity`]: https://docs.rs/dces/0.2.0/dces/entity/struct.Entity.html
     /// [`Cursor`]: ../struct.Cursor.html
     TextBehavior<TextBehaviorState>: ActivateHandler, KeyDownHandler {
@@ -483,7 +490,7 @@ widget!(
 
         /// Sets or shares ta value that describes if the widget should lost focus on activation (when Enter pressed).
         lost_focus_on_activation: bool,
-        
+
         /// Sets or shares the entity of the parent widget.
         parent: u32,
 
@@ -492,7 +499,7 @@ widget!(
 
         /// Sets or shares the text property.
         text: String16,
-    
+
         /// Sets or shares the text selection property.
         text_selection: TextSelection
     }
@@ -509,15 +516,15 @@ impl Template for TextBehavior {
             .lost_focus_on_activation(true)
             .child(
                 MouseBehavior::new()
-                .visibility(id)
-                .enabled(id)
-                .on_mouse_down(move |states, m| {
-                    states
-                        .get_mut::<TextBehaviorState>(id)
-                        .action(TextAction::Mouse(m));
-                    true
-                })
-                .build(ctx)
+                    .visibility(id)
+                    .enabled(id)
+                    .on_mouse_down(move |states, m| {
+                        states
+                            .get_mut::<TextBehaviorState>(id)
+                            .action(TextAction::Mouse(m));
+                        true
+                    })
+                    .build(ctx),
             )
             .on_key_down(move |states, event| -> bool {
                 states

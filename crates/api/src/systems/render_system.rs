@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use dces::prelude::{EntityComponentManager, System};
+use dces::prelude::*;
 
 use crate::{prelude::*, render::RenderContext2D, tree::Tree};
 

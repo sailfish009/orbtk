@@ -1,17 +1,19 @@
 use super::behaviors::TextBehavior;
 use crate::prelude::*;
 
+use crate::{api::prelude::*, prelude::*, proc_macros::*, shell::prelude::*, theme::prelude::*};
+
 // --- KEYS --
-
 pub static STYLE_TEXT_BOX: &'static str = "text_box";
-
 static ID_CURSOR: &'static str = "id_cursor";
+// -- KEYS --
 
 widget!(
     /// The `TextBox` widget represents a single line text input widget.
     ///
     /// * style: `text_box`
-    TextBox: ActivateHandler, KeyDownHandler {
+    TextBox: ActivateHandler,
+    KeyDownHandler {
         /// Sets or shares the text property.
         text: String16,
 
@@ -67,7 +69,7 @@ impl Template for TextBox {
             .font(id)
             .font_size(id)
             .build(ctx);
-        
+
         let cursor = Cursor::new()
             .id(ID_CURSOR)
             .h_align("start")
@@ -75,7 +77,7 @@ impl Template for TextBox {
             .focused(id)
             .text_selection(id)
             .build(ctx);
-                        
+
         let text_behavior = TextBehavior::new()
             .cursor(cursor.0)
             .focused(id)

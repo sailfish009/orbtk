@@ -1,5 +1,5 @@
 use super::behaviors::{MouseBehavior, SelectionBehavior};
-use crate::prelude::*;
+use crate::{api::prelude::*, prelude::*, proc_macros::*, theme::prelude::*};
 
 widget!(
     /// The `CheckBox` widget can be switch its selected state. It contains a selection box and a text.
@@ -81,6 +81,7 @@ impl Template for CheckBox {
                     .target(id.0)
                     .child(
                         SelectionBehavior::new()
+                            .on_changed_filter(id)
                             .selected(id)
                             .enabled(id)
                             .target(id.0)

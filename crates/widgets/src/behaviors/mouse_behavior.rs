@@ -1,6 +1,4 @@
-use std::cell::Cell;
-
-use crate::prelude::*;
+use crate::{api::prelude::*, proc_macros::*};
 
 #[derive(Debug, Copy, Clone)]
 enum Action {
@@ -13,7 +11,7 @@ enum Action {
 #[derive(Default, AsAny)]
 pub struct MouseBehaviorState {
     action: Option<Action>,
-    has_delta: Cell<bool>,
+    has_delta: bool,
 }
 
 impl MouseBehaviorState {
@@ -33,7 +31,7 @@ impl State for MouseBehaviorState {
 
             match action {
                 Action::Press(_) => {
-                    mouse_behavior(ctx.widget()).set_pressed(true);
+                    ctx.get_widget(target).set("pressed", true);
                     toggle_flag("pressed", &mut ctx.get_widget(target));
                 }
                 Action::Release(p) => {
@@ -42,7 +40,7 @@ impl State for MouseBehaviorState {
                         return;
                     }
 
-                    mouse_behavior(ctx.widget()).set_pressed(false);
+                    ctx.get_widget(target).set("pressed", false);
                     toggle_flag("pressed", &mut ctx.get_widget(target));
 
                     if check_mouse_condition(p.position, &ctx.widget()) {
@@ -57,7 +55,7 @@ impl State for MouseBehaviorState {
                 }
                 Action::Scroll(p) => {
                     mouse_behavior(ctx.widget()).set_position(p);
-                    self.has_delta.set(true);
+                    self.has_delta = true;
                 }
             };
 
@@ -68,9 +66,9 @@ impl State for MouseBehaviorState {
     }
 
     fn update_post_layout(&mut self, _: &mut Registry, ctx: &mut Context) {
-        if self.has_delta.get() {
+        if self.has_delta {
             mouse_behavior(ctx.widget()).set_delta(Point::default());
-            self.has_delta.set(false);
+            self.has_delta = false;
         }
     }
 }

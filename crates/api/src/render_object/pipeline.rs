@@ -1,4 +1,4 @@
-use crate::{prelude::*, utils::*};
+use crate::render_object::*;
 
 pub struct PipelineRenderObject;
 
@@ -13,7 +13,7 @@ impl RenderObject for PipelineRenderObject {
         let bounds = *ctx.widget().get::<Rectangle>("bounds");
         let pipeline = ctx
             .widget()
-            .get::<RenderPipeline>("render_pipeline")
+            .get::<DefaultRenderPipeline>("render_pipeline")
             .0
             .clone();
 
